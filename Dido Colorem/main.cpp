@@ -1,18 +1,9 @@
 #include <SFML\Window.hpp>
 #include <iostream>
+#include "Game.h"
 
 int main(){
-	sf::Window w(sf::VideoMode(640, 480), "Dido Colorem", sf::Style::Close);
-
-	w.display();
-
-	sf::Event e;
-
-	while(w.isOpen()){
-		while (w.pollEvent(e)){
-			if (e.type == sf::Event::Closed)
-				w.close();
-		}
-	}
-	std::cout << "BYEBTYE" << std::endl;
+	
+	dido::Game game(640, 480, "Dido Colorem");
+	game.Run();
 }
