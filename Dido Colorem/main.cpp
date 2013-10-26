@@ -6,4 +6,5 @@ int main(){
 	
 	dido::Game game(640, 480, "Dido Colorem");
 	game.Run();
+
 }

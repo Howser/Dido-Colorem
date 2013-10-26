@@ -7,7 +7,7 @@ namespace dido{
 	}
 
 	Game::Game(int const& w, int const& h, std::string const& title)
-		: window(sf::VideoMode(w, h), title, sf::Style::Close){
+		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(10, 8){
 			window.display();
 	}
 
@@ -16,6 +16,9 @@ namespace dido{
 	}
 
 	void Game::Run(){
+
+		LoadRecources();
+
 		sf::Clock gameClock;
 		
 		int previous = gameClock.getElapsedTime().asMilliseconds();
@@ -66,7 +69,14 @@ namespace dido{
 		window.clear(sf::Color::Magenta);
 
 		// Render stuff in here
-
+		map.Render(&window);
 		window.display();
+	}
+
+	void Game::LoadRecources(){
+		sf::Texture tileset;
+		tileset.loadFromFile("Content/raw.png");
+		map.SetTexture(tileset);
+		map.InitMap();
 	}
 }

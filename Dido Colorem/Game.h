@@ -3,6 +3,8 @@
 #include <SFML\Graphics.hpp>
 #include <string>
 
+#include "Map.h"
+
 #define DEFAULT_MS_PER_UPDATE 1000.0f/60.0f
 
 namespace dido{
@@ -19,8 +21,11 @@ namespace dido{
 		void Update();
 		void Render();
 
+		void LoadRecources();
+
 	private:
 		sf::RenderWindow window;
 		bool running;
+		Map map;
 	};
-}
+}	
