@@ -27,5 +27,6 @@ namespace dido{
 		sf::RenderWindow window;
 		bool running;
 		Map map;
+		sf::View cam;
 	};
-}	
+}

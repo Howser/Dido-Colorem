@@ -9,6 +9,10 @@ namespace dido{
 	Game::Game(int const& w, int const& h, std::string const& title)
 		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100){
 			window.display();
+			cam.reset(sf::FloatRect(320, 240, 320, 240));
+			cam.setViewport(sf::Rect<float>(0,0, 2, 2));
+			cam.setCenter(320, 240);
+			window.setView(cam);
 	}
 
 	Game::~Game(){
@@ -75,8 +79,8 @@ namespace dido{
 
 	void Game::LoadRecources(){
 		sf::Texture tileset;
-		tileset.loadFromFile("Content/raw.png");
+		tileset.loadFromFile("Content/normal.png");
 		map.SetTexture(tileset);
-		map.InitMap();
+		map.Load("Content/testmap2.png");
 	}
 }

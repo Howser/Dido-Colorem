@@ -21,9 +21,12 @@ namespace dido{
 		~Map();
 
 		void SetTexture(sf::Texture tilesheet);
-		void InitMap(); // Temp func just to get something on the screen
+
+		void Load(std::string path);
 
 		void Render(sf::RenderWindow* window);
+
+		sf::Rect<float> CheckCollision(sf::Rect<float> const& collisionMask);
 
 	private:
 		std::vector<std::vector<Tile*> > solidLayer;
@@ -31,5 +34,8 @@ namespace dido{
 		sf::Texture tilesheet;
 
 		int width, height;
+
+	private:
+		void SetSize(int w, int h);
 	};
 }
