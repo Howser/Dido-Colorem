@@ -3,11 +3,11 @@
 namespace dido{
 
 	Map::Map()
-		: width(0), height(0), tilesheet(), solidLayer()
+		: width(0), height(0), tilesheet(), solidLayer(), foregroundLayer() 
 	{}
 
 	Map::Map(int const& w, int const& h)
-		: width(w), height(h), tilesheet(), solidLayer()
+		: width(w), height(h), tilesheet(), solidLayer(), foregroundLayer()
 	{}
 
 	Map::~Map(){}
@@ -15,9 +15,13 @@ namespace dido{
 	void Map::InitMap(){ // TEMP
 
 		solidLayer.resize(width);
+		foregroundLayer.resize(width);
 
 		for (int x = 0; x < width; x++){
+
 			solidLayer.at(x).resize(height, 0);
+			foregroundLayer.at(x).resize(height, 0);
+
 			for (int y = 0; y < height; y++){
 				if (x == 0 || y == 0 || x == width-1 || y == height-1 ){
 					Tile* t = new Tile();
@@ -32,6 +36,13 @@ namespace dido{
 
 					solidLayer[x][y] = t;
 				}
+				if (y % 4 == 0){
+					Tile* t = new Tile();
+					t->texX = 32;
+					t->texY = 0;
+
+					foregroundLayer[x][y] = t;
+				}
 			}
 		}
 
@@ -43,6 +54,11 @@ namespace dido{
 			for (int y = 0; y < height; y++){
 				if (solidLayer[x][y]!= NULL){
 					sf::Sprite s(tilesheet, sf::IntRect(solidLayer[x][y]->texX, solidLayer[x][y]->texY, 16, 16));
+					s.setPosition(x*16, y*16);
+					window->draw(s);
+				}
+				if (foregroundLayer[x][y] != NULL){
+					sf::Sprite s(tilesheet, sf::IntRect(foregroundLayer[x][y]->texX, foregroundLayer[x][y]->texY, 16, 16));
 					s.setPosition(x*16, y*16);
 					window->draw(s);
 				}

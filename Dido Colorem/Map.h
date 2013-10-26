@@ -27,6 +27,7 @@ namespace dido{
 
 	private:
 		std::vector<std::vector<Tile*> > solidLayer;
+		std::vector<std::vector<Tile*> > foregroundLayer;
 		sf::Texture tilesheet;
 
 		int width, height;
