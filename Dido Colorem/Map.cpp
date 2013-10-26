@@ -61,10 +61,9 @@ namespace dido{
 	}
 
 	void Map::Update(sf::Vector2f deltaCameraMovement, sf::RenderWindow* window){
-
-		// This gives us beautiful scrolling backgrounds. 
+		#pragma region Scroll
 		imgPosOne.x += deltaCameraMovement.x/2;
-		if (window->mapCoordsToPixel(imgPosOne).x > 0){
+		if (window->mapCoordsToPixel(imgPosOne).x > -5){
 			imgPosTwo.x = imgPosOne.x - backgroundImage.getSize().x;
 		} else {
 			imgPosTwo.x = imgPosOne.x + backgroundImage.getSize().x;
@@ -74,17 +73,21 @@ namespace dido{
 		} else {
 			imgPosOne.x = imgPosTwo.x + backgroundImage.getSize().x;
 		}
+		#pragma endregion
+	}
+
+	void Map::RenderBackground(sf::RenderWindow* window, sf::Sprite* sprite){
+		sprite->setPosition(imgPosOne);
+		window->draw(*sprite);
+		sprite->setPosition(imgPosTwo);
+		window->draw(*sprite);
 	}
 
 	void Map::Render(sf::RenderWindow* window){
 
 		sf::Sprite backgroundSprite(backgroundImage);
-
-		backgroundSprite.setPosition(imgPosOne);
-		window->draw(backgroundSprite);
-		backgroundSprite.setPosition(imgPosTwo);
-		window->draw(backgroundSprite);
-
+		RenderBackground(window, &backgroundSprite);
+		
 		for (int x = 0; x < width; x++){
 			for (int y = 0; y < height; y++){
 				if (solidLayer[x][y]!= NULL){
