@@ -10,7 +10,7 @@ namespace dido{
 	{}
 
 	Map::Map(int const& w, int const& h)
-		: width(w), height(h), tilesheet(), solidLayer(), foregroundLayer()
+		: width(w), height(h), tilesheet(), solidLayer(), foregroundLayer(), backgroundImage()
 	{}
 
 	Map::~Map(){}
@@ -60,7 +60,30 @@ namespace dido{
 		}
 	}
 
+	void Map::Update(sf::Vector2f deltaCameraMovement, sf::RenderWindow* window){
+
+		// This gives us beautiful scrolling backgrounds. 
+		imgPosOne.x += deltaCameraMovement.x/2;
+		if (window->mapCoordsToPixel(imgPosOne).x > 0){
+			imgPosTwo.x = imgPosOne.x - backgroundImage.getSize().x;
+		} else {
+			imgPosTwo.x = imgPosOne.x + backgroundImage.getSize().x;
+		}
+		if (window->mapCoordsToPixel(imgPosTwo).x > 0){
+			imgPosOne.x = imgPosTwo.x - backgroundImage.getSize().x;
+		} else {
+			imgPosOne.x = imgPosTwo.x + backgroundImage.getSize().x;
+		}
+	}
+
 	void Map::Render(sf::RenderWindow* window){
+
+		sf::Sprite backgroundSprite(backgroundImage);
+
+		backgroundSprite.setPosition(imgPosOne);
+		window->draw(backgroundSprite);
+		backgroundSprite.setPosition(imgPosTwo);
+		window->draw(backgroundSprite);
 
 		for (int x = 0; x < width; x++){
 			for (int y = 0; y < height; y++){
@@ -76,11 +99,16 @@ namespace dido{
 				}
 			}
 		}
-
 	}
 	 
-	void Map::SetTexture(sf::Texture tilesheet){
+	void Map::SetTexture(sf::Texture tilesheet, sf::Texture background){
 		this->tilesheet = tilesheet;
+		this->backgroundImage = background;
+
+		imgPosOne.x = 0;
+		imgPosOne.y = 0;
+		imgPosTwo.x = 0;
+		imgPosTwo.y = 0;
 	}
 
 	sf::Rect<float> Map::CheckCollision(sf::Rect<float> const& collisionMask){

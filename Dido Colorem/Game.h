@@ -28,5 +28,6 @@ namespace dido{
 		bool running;
 		Map map;
 		sf::View cam;
+		sf::Vector2f previousCamPos;
 	};
 }

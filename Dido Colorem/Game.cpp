@@ -8,10 +8,12 @@ namespace dido{
 
 	Game::Game(int const& w, int const& h, std::string const& title)
 		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100){
+			window.setVerticalSyncEnabled(true);
+
 			window.display();
-			cam.reset(sf::FloatRect(320, 240, 320, 240));
-			cam.setViewport(sf::Rect<float>(0,0, 2, 2));
-			cam.setCenter(320, 240);
+
+			cam.reset(sf::FloatRect(0, 0, 640/2, 480/2));
+			cam.setViewport(sf::Rect<float>(0,0, 1, 1));
 			window.setView(cam);
 	}
 
@@ -67,20 +69,35 @@ namespace dido{
 				running = false;
 			}
 		}
+
+		previousCamPos = cam.getCenter();
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+			cam.move(-5, 0);
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+			cam.move(5, 0);
+		}
+
+		map.Update(cam.getCenter() - previousCamPos, &window);
 	}
 
 	void Game::Render(){
 		window.clear(sf::Color::Magenta);
 
+		window.setView(cam);
 		// Render stuff in here
 		map.Render(&window);
+
 		window.display();
 	}
 
 	void Game::LoadRecources(){
-		sf::Texture tileset;
-		tileset.loadFromFile("Content/normal.png");
-		map.SetTexture(tileset);
+		sf::Texture tileset, background;
+		tileset.loadFromFile("Content/tilesets/green.png");
+		background.loadFromFile("Content/background.png");
+		map.SetTexture(tileset, background);
 		map.Load("Content/testmap2.png");
 	}
 }
