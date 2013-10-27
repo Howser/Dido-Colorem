@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Map.h"
+#include "Player.h"
 
 #define DEFAULT_MS_PER_UPDATE 1000.0f/60.0f
 
@@ -29,5 +30,7 @@ namespace dido{
 		Map map;
 		sf::View cam;
 		sf::Vector2f previousCamPos;
+
+		Player player;
 	};
 }

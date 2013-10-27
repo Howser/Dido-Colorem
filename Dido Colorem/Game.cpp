@@ -3,11 +3,11 @@
 
 namespace dido{
 	Game::Game(){
-	
+		
 	}
 
 	Game::Game(int const& w, int const& h, std::string const& title)
-		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100){
+		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100), player(100, 120, &map){
 			window.setVerticalSyncEnabled(true);
 
 			window.display();
@@ -22,6 +22,9 @@ namespace dido{
 	}
 
 	void Game::Run(){
+
+		if (sf::Joystick::isConnected(0))
+			std::cout << "Controller Detected." << std::endl;
 
 		LoadRecources();
 
@@ -71,15 +74,8 @@ namespace dido{
 		}
 
 		previousCamPos = cam.getCenter();
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-			cam.move(-5, 0);
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-			cam.move(5, 0);
-		}
-
+		player.Update();
+		cam.setCenter(player.GetPosition());
 		map.Update(cam.getCenter() - previousCamPos, &window);
 	}
 
@@ -89,15 +85,18 @@ namespace dido{
 		window.setView(cam);
 		// Render stuff in here
 		map.Render(&window);
-
-		window.display();
+		player.Render(&window);
+		window.display();	
 	}
 
 	void Game::LoadRecources(){
-		sf::Texture tileset, background;
+		sf::Texture tileset, background, playerTexture;
 		tileset.loadFromFile("Content/tilesets/green.png");
 		background.loadFromFile("Content/background.png");
 		map.SetTexture(tileset, background);
 		map.Load("Content/testmap2.png");
+		playerTexture.loadFromFile("Content/dido.png", sf::IntRect(0, 0, 32, 32));
+		
+		player.SetTexture(playerTexture);
 	}
 }

@@ -27,7 +27,9 @@ namespace dido{
 		void Render(sf::RenderWindow* window);
 		void Update(sf::Vector2f deltaCameraMovement, sf::RenderWindow* window);
 
-		sf::Rect<float> CheckCollision(sf::Rect<float> const& collisionMask);
+		bool CheckCollision(float xx, float yy);
+
+		int Snap(float nr);
 
 	private:
 		std::vector<std::vector<Tile*> > solidLayer;

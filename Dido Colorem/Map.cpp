@@ -64,12 +64,12 @@ namespace dido{
 
 		// This gives us beautiful scrolling backgrounds. 
 		imgPosOne.x += deltaCameraMovement.x/2;
-		if (window->mapCoordsToPixel(imgPosOne).x > 0){
+		if (window->mapCoordsToPixel(imgPosOne).x >= -5){
 			imgPosTwo.x = imgPosOne.x - backgroundImage.getSize().x;
 		} else {
 			imgPosTwo.x = imgPosOne.x + backgroundImage.getSize().x;
 		}
-		if (window->mapCoordsToPixel(imgPosTwo).x > 0){
+		if (window->mapCoordsToPixel(imgPosTwo).x >= 0){
 			imgPosOne.x = imgPosTwo.x - backgroundImage.getSize().x;
 		} else {
 			imgPosOne.x = imgPosTwo.x + backgroundImage.getSize().x;
@@ -111,21 +111,21 @@ namespace dido{
 		imgPosTwo.y = 0;
 	}
 
-	sf::Rect<float> Map::CheckCollision(sf::Rect<float> const& collisionMask){
-		sf::Rect<float> returnRect;
-		returnRect.left = -1;
-		returnRect.top = -1;
-		returnRect.width = 16;
-		returnRect.height = 16;
+	bool Map::CheckCollision(float xx, float yy){
+		
+		int x = xx/16;
+		int y = yy/16;
 
-		int x = collisionMask.left/16;
-		int y = collisionMask.top/16;
+		if (x < 0 || x > width-1 || y < 0 || y  > height-1)
+			return false;
 
-		if (solidLayer[x][y] != NULL){
-			returnRect.left = x;
-			returnRect.top = y;	
-		}
-		return returnRect;
+		if (solidLayer[x][y] != NULL)
+			return true;
+		return false;
+	}
+
+	int Map::Snap(float nr){
+		return ((int)nr/16)*16;
 	}
 
 	void Map::SetSize(int w, int h){
