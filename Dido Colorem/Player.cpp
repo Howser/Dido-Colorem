@@ -56,9 +56,18 @@ namespace dido{
 		playerSprite.move(velocity);
 
 		// Collision detection
-		ProcessCollisionsVertical(true);
-		ProcessCollisionsVertical(false);
+		if (canJump){
+			ProcessCollisionsHorizontal(true);
+			ProcessCollisionsHorizontal(false);
+			ProcessCollisionsVertical(true);
+			ProcessCollisionsVertical(false);
 
+		} else {
+			ProcessCollisionsVertical(true);
+			ProcessCollisionsVertical(false);
+			ProcessCollisionsHorizontal(true);
+			ProcessCollisionsHorizontal(false);
+		}
 	}
 
 	void Player::Render(sf::RenderWindow* window){
@@ -84,30 +93,58 @@ namespace dido{
 	}
 
 	void Player::ProcessCollisionsVertical(bool bottom){
-		int dir = -32;
+		int dir = 0;
+		int something = -15;
 
-		if (bottom)
-			dir = 31;
+		if (bottom){
+			dir = 32;
+			something = 32;
+		}
 
-		if (map->CheckCollision(playerSprite.getPosition().x, playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-32);
+		if (map->CheckCollision(playerSprite.getPosition().x +1 , playerSprite.getPosition().y+dir)){
+			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
 			velocity.y = 0;
 			if (bottom)
 				canJump = true;
 
-		} else if (map->CheckCollision(playerSprite.getPosition().x+32, playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-32);
+		} else if (map->CheckCollision(playerSprite.getPosition().x+31, playerSprite.getPosition().y+dir)){
+			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
 			velocity.y = 0;
 			if (bottom)
 				canJump = true;
 
 		} else if (map->CheckCollision(playerSprite.getPosition().x+16, playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-32);
+			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
 			velocity.y = 0;// negate gravity, otherwise it keeps building making the player move at max speed when walking over the edge of a tile
 			if (bottom)
 				canJump = true;
+
 		} else if (bottom) {
 			canJump = false;
+		}
+	}
+
+	void Player::ProcessCollisionsHorizontal(bool right){
+		int dir = 0;
+		int something = -16;
+
+		if (right){
+			something = 33;
+			dir = 32;
+		}
+
+		if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+1)){
+			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
+			velocity.x = 0;
+
+		} else if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+16)){
+			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
+			velocity.x = 0;
+
+		} else if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+31)){
+			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
+			velocity.x = 0;
+
 		}
 	}
 }

@@ -36,6 +36,7 @@ namespace dido{
 		bool canJump;
 
 		void ProcessCollisionsVertical(bool bottom);
+		void ProcessCollisionsHorizontal(bool right);
 
 		Map* map;
 
