@@ -7,13 +7,14 @@ namespace dido{
 	Player::Player(){}
 
 	Player::Player(float x, float y, Map* map)
-		: playerSprite(), map(map), velocity()  {
+		: playerSprite(), map(map) {
 			playerSprite.setPosition(x, y);
 			gravity = 0.4f;
-			moveAcceleration = 2.2f;
-			maxXVelocity = 5;
+			moveSpeed = 5;
 			maxYVelocity = 12;
 			jumpPower = 10;
+			canJump = false;
+			ySpeed = 0;
 	}
 
 	Player::~Player(){}
@@ -23,50 +24,83 @@ namespace dido{
 		if (sf::Joystick::isConnected(0)){
 			// Joystick stuff
 
-			velocity.x += moveAcceleration*sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X)/100;
+			float px = playerSprite.getPosition().x;
+			float py = playerSprite.getPosition().y;
+			
+			float c = 0;
+			
+			float moveAmount = sf::Joystick::getAxisPosition(0, sf::Joystick::X)*moveSpeed/100;
+
+			if (moveAmount > 0)
+				c = 16;
+
+			if (map->CheckCollision(px + moveAmount + c, py) || map->CheckCollision(px + moveAmount + c, py + 15)){
+				if (moveAmount > 0)
+					moveAmount = map->Snap(px+moveAmount + c) - px - c - 1;
+				else 
+					moveAmount = map->Snap(px+moveAmount + c) - px + 16;
+			}
+
+			playerSprite.move(moveAmount, 0);
+
 			if (sf::Joystick::isButtonPressed(0, 0) && canJump)
 				Jump();
 
 		} else {
+			float px = playerSprite.getPosition().x;
+			float py = playerSprite.getPosition().y;
+			
+			float c = 0;
 			// Do it the old fashioned way
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-				velocity.x -= moveAcceleration;
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-				velocity.x += moveAcceleration;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+
+				float moveAmount = -moveSpeed;
+				if (map->CheckCollision(px + moveAmount, py) || map->CheckCollision(px + moveAmount, py + 15))
+					moveAmount = map->Snap(px + moveAmount) - px + 16;
+				playerSprite.move(moveAmount, 0);
+
+			} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+
+				float moveAmount = moveSpeed;
+				if (map->CheckCollision(px + moveAmount + 16, py) || map->CheckCollision(px + moveAmount + 16, py + 15))
+					moveAmount = map->Snap(px + moveAmount + 16) - px - 17;
+				playerSprite.move(moveAmount, 0);
+			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && canJump)
 				Jump();
 		}
 
-		// Simulate friction
-		sf::Vector2f fric = -velocity * 0.5f;  
-		fric.y = 0;
+		if (!canJump){
+			float px = playerSprite.getPosition().x;
+			float py = playerSprite.getPosition().y;
 
-		ApplyForce(fric);
+			ySpeed += gravity;
+			if (ySpeed > maxYVelocity)
+				ySpeed = maxYVelocity;
 
-		// Gravity
-		if (!canJump)
-			velocity.y += gravity;
+			float moveAmount = ySpeed;
 
-		// Cap speeds
-		if (velocity.x > maxXVelocity)
-			velocity.x = maxXVelocity;
-		if (velocity.y > maxYVelocity)
-			velocity.y = maxYVelocity;
-
-		playerSprite.move(velocity);
-
-		// Collision detection
-		if (canJump){
-			ProcessCollisionsHorizontal(true);
-			ProcessCollisionsHorizontal(false);
-			ProcessCollisionsVertical(true);
-			ProcessCollisionsVertical(false);
+			if (ySpeed > 0){
+				if (map->CheckCollision(px, py + ySpeed + 16) || map->CheckCollision(px + 16, py + ySpeed + 16)){
+					moveAmount = map->Snap(py + moveAmount + 16) - py - 16;
+					ySpeed = 0;
+					canJump = true;
+				}
+			} else {
+				if (map->CheckCollision(px, py + ySpeed) || map->CheckCollision(px + 16, py + ySpeed)){
+					moveAmount = map->Snap(py + moveAmount) - py + 16;
+					ySpeed = 0;
+				}
+			}
+			playerSprite.move(0, moveAmount);
 
 		} else {
-			ProcessCollisionsVertical(true);
-			ProcessCollisionsVertical(false);
-			ProcessCollisionsHorizontal(true);
-			ProcessCollisionsHorizontal(false);
+			float px = playerSprite.getPosition().x;
+			float py = playerSprite.getPosition().y;
+
+			if (!map->CheckCollision(px, py + 16) || !map->CheckCollision(px+16, py+ 16)){
+				canJump = false;
+			}
 		}
 	}
 
@@ -83,68 +117,9 @@ namespace dido{
 		return playerSprite.getPosition();
 	}
 
-	void Player::ApplyForce(sf::Vector2f force){
-		velocity += force;
-	}
 
 	void Player::Jump(){
-		velocity.y -= jumpPower;
+		ySpeed = -jumpPower;
 		canJump = false;
-	}
-
-	void Player::ProcessCollisionsVertical(bool bottom){
-		int dir = 0;
-		int something = -15;
-
-		if (bottom){
-			dir = 32;
-			something = 32;
-		}
-
-		if (map->CheckCollision(playerSprite.getPosition().x +1 , playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
-			velocity.y = 0;
-			if (bottom)
-				canJump = true;
-
-		} else if (map->CheckCollision(playerSprite.getPosition().x+31, playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
-			velocity.y = 0;
-			if (bottom)
-				canJump = true;
-
-		} else if (map->CheckCollision(playerSprite.getPosition().x+16, playerSprite.getPosition().y+dir)){
-			playerSprite.setPosition(playerSprite.getPosition().x, (map->Snap(playerSprite.getPosition().y+dir))-something);
-			velocity.y = 0;// negate gravity, otherwise it keeps building making the player move at max speed when walking over the edge of a tile
-			if (bottom)
-				canJump = true;
-
-		} else if (bottom) {
-			canJump = false;
-		}
-	}
-
-	void Player::ProcessCollisionsHorizontal(bool right){
-		int dir = 0;
-		int something = -16;
-
-		if (right){
-			something = 33;
-			dir = 32;
-		}
-
-		if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+1)){
-			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
-			velocity.x = 0;
-
-		} else if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+16)){
-			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
-			velocity.x = 0;
-
-		} else if (map->CheckCollision(playerSprite.getPosition().x + dir, playerSprite.getPosition().y+31)){
-			playerSprite.setPosition(map->Snap(playerSprite.getPosition().x + dir) - something, playerSprite.getPosition().y);
-			velocity.x = 0;
-
-		}
 	}
 }

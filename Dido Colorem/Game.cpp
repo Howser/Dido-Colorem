@@ -95,7 +95,7 @@ namespace dido{
 		background.loadFromFile("Content/background.png");
 		map.SetTexture(tileset, background);
 		map.Load("Content/testmap2.png");
-		playerTexture.loadFromFile("Content/dido.png", sf::IntRect(0, 0, 32, 32));
+		playerTexture.loadFromFile("Content/dido.png", sf::IntRect(0, 0, 16, 16));
 		
 		player.SetTexture(playerTexture);
 	}

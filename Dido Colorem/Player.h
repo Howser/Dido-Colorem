@@ -22,15 +22,13 @@ namespace dido{
 		void SetTexture(sf::Texture tex);
 		sf::Vector2f GetPosition();
 
-		void ApplyForce(sf::Vector2f force);
-
 	private:
 		sf::Sprite playerSprite;
 		sf::Texture playerTexture; // this is retart i know
-		sf::Vector2f velocity;
+
 		float gravity; 
-		float moveAcceleration;
-		float maxXVelocity;
+		float moveSpeed;
+		float ySpeed;
 		float maxYVelocity;
 		float jumpPower;
 		bool canJump;
