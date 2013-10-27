@@ -25,6 +25,7 @@ namespace dido{
 		void Load(std::string path);
 
 		void Render(sf::RenderWindow* window);
+		void RenderBackground(sf::RenderWindow* window, sf::Sprite* sprite);
 		void Update(sf::Vector2f deltaCameraMovement, sf::RenderWindow* window);
 
 		bool CheckCollision(float xx, float yy);
