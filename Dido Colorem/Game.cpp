@@ -7,7 +7,7 @@ namespace dido{
 	}
 
 	Game::Game(int const& w, int const& h, std::string const& title)
-		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100), player(100, 120, &map){
+		: window(sf::VideoMode(w, h), title, sf::Style::Close), map(100, 100), player(100, 120, &map), levelManager(&map){
 			window.setVerticalSyncEnabled(true);
 
 			window.display();

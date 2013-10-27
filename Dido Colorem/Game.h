@@ -5,6 +5,7 @@
 
 #include "Map.h"
 #include "Player.h"
+#include "LevelManager.h"
 
 #define DEFAULT_MS_PER_UPDATE 1000.0f/60.0f
 
@@ -24,13 +25,15 @@ namespace dido{
 
 		void LoadRecources();
 
+		void LoadMap();
+
 	private:
 		sf::RenderWindow window;
 		bool running;
 		Map map;
 		sf::View cam;
 		sf::Vector2f previousCamPos;
-
+		LevelManager levelManager;
 		Player player;
 	};
 }
